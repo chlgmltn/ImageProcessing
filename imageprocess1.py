@@ -8,8 +8,21 @@ image = original_image.copy()
 image = imutils.resize(image, width=500)
 
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-blurred = cv2.GaussianBlur(gray, (5,5,), 0)
-edged = cv2.Canny(blurred, 75, 200)
+# 밝기 대비 향상을 위해 adaptive threshold 적용
+thresh = cv2.adaptiveThreshold(
+    gray, 255,
+    cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+    cv2.THRESH_BINARY, 11, 2
+)
+
+# 이진화 결과 확인
+cv2.imshow("Threshold", thresh)
+
+blurred = cv2.GaussianBlur(thresh, (7,7,), 0)
+edged = cv2.Canny(blurred, 50, 150)
+
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+edged_cleaned = cv2.morphologyEx(edged, cv2.MORPH_CLOSE, kernel)
 
 # 디버깅 1
 cv2.imshow("Edged", edged)
@@ -22,8 +35,10 @@ cnts = sorted(cnts, key=cv2.contourArea, reverse=True)
 
 receiptCnt = None
 for c in cnts:
-    peri = cv2.arcLength(c, True)
-    approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+    if cv2.contourArea(c) > 1000:  # 너무 작으면 제외
+            hull = cv2.convexHull(c)
+            peri = cv2.arcLength(hull, True)
+            approx = cv2.approxPolyDP(hull, 0.02 * peri, True)
 
     if len(approx) == 4:
         receiptCnt = approx
@@ -41,4 +56,3 @@ receipt = four_point_transform(original_image, receiptCnt.reshape(4, 2) * ratio)
 cv2.imshow("Receipt", receipt)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
