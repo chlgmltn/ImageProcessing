@@ -3,7 +3,7 @@ import imutils
 import numpy as np
 from imutils.perspective import four_point_transform
 
-original_image =  cv2.imread("recipt_image/recipt7.jpg")
+original_image =  cv2.imread("recipt_image/recipt3.jpg")
 
 image = original_image.copy()
 image = imutils.resize(image, width=500)
@@ -26,9 +26,6 @@ edged = cv2.Canny(blurred, 50, 150)
 cv2.imshow("Edged", edged)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
-print("thresh checksum:", np.sum(thresh))
-print("blurred checksum:", np.sum(blurred))
 
 # 외곽선 추출 및 면적 기준 정렬
 cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -64,10 +61,6 @@ for c in cnts:
 # 윤곽선 없으면 minAreaRect로 보정 시도
 if receiptCnt is None:
     print("Could not find 4-point contour. Using minAreaRect fallback.")
-    largest = max(cnts, key=cv2.contourArea)
-    rect = cv2.minAreaRect(largest)
-    box = cv2.boxPoints(rect)
-    receiptCnt = np.intp(box)
 
 # 윤곽선 시각화
 output = image.copy()

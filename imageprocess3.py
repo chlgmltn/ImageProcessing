@@ -3,7 +3,7 @@ import imutils
 import numpy as np
 from imutils.perspective import four_point_transform
 
-def is_clean_background(image, edge_thresh=25000):
+def is_clean_background(image, edge_thresh=35000):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (3, 3), 0)
     edges = cv2.Canny(blurred, 50, 150)
@@ -11,7 +11,7 @@ def is_clean_background(image, edge_thresh=25000):
     return edge_count < edge_thresh
 
 # 원본 이미지 로딩
-original_image = cv2.imread("recipt_image/recipt1.jpg")
+original_image = cv2.imread("recipt_image/recipt3.jpg")
 image = original_image.copy()
 image = imutils.resize(image, width=500)
 
@@ -45,6 +45,9 @@ edged = cv2.Canny(before_edged, 50, 150)
 cv2.imshow("Edged", edged)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
+
+print("thresh checksum:", np.sum(thresh))
+print("blurred checksum:", np.sum(blurred))
 
 # 외곽선 추출 및 면적 기준 정렬
 cnts = cv2.findContours(edged.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
