@@ -4,7 +4,7 @@ import numpy as np
 from imutils.perspective import four_point_transform
 from imutils.perspective import order_points
 
-original_image =  cv2.imread("recipt_image/recipt4.jpg")
+original_image =  cv2.imread("recipt_image/recipt7.jpg")
 
 image = original_image.copy()
 image = imutils.resize(image, width=500)
@@ -130,7 +130,7 @@ if receiptCnt is not None:
     ratio = original_image.shape[1] / float(image.shape[1])
     receipt = four_point_transform(original_image, receiptCnt.reshape(4, 2) * ratio)
 
+cv2.imwrite("result/receipt.jpg", receipt)
 cv2.imshow("Receipt", receipt)
-cv2.imshow("result/receipt")
 cv2.waitKey(0)
 cv2.destroyAllWindows()
