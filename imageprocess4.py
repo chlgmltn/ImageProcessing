@@ -4,14 +4,7 @@ import numpy as np
 from imutils.perspective import four_point_transform
 from imutils.perspective import order_points
 
-def central_crop(image, crop_ratio=0.85):
-    h, w = image.shape[:2]
-    ch, cw = int(h * crop_ratio), int(w * crop_ratio)
-    start_y = (h - ch) // 2
-    start_x = (w - cw) // 2
-    return image[start_y:start_y+ch, start_x:start_x+cw]
-
-original_image =  cv2.imread("recipt_image/recipt9.jpg")
+original_image =  cv2.imread("recipt_image/recipt7.jpg")
 
 image = original_image.copy()
 image = imutils.resize(image, width=500)
@@ -123,10 +116,11 @@ if receiptCnt is None:
             break
 
 if receiptCnt is None:
-    print("⚠️ 윤곽선 검출 실패 → 중앙 크롭 사용")
-    receipt = central_crop(original_image)
+    print("⚠️ 윤곽선 검출 실패 → 원본 이미지 그대로 사용")
+    receipt = original_image.copy()
 else:
     print("✅ 윤곽선 검출 성공 → 투시 변환")
+
 
 # 윤곽선 시각화 (윤곽선이 있을 경우만)
 output = image.copy()
@@ -136,6 +130,7 @@ if receiptCnt is not None:
     ratio = original_image.shape[1] / float(image.shape[1])
     receipt = four_point_transform(original_image, receiptCnt.reshape(4, 2) * ratio)
 
+cv2.imwrite("result/receipt.jpg", receipt)
 cv2.imshow("Receipt", receipt)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
